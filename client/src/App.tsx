@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { LatLngExpression } from 'leaflet';
+import { Icon, LatLngExpression } from 'leaflet';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -45,6 +45,12 @@ function App() {
   )
 }
 
+const destIcon = new Icon({
+  iconUrl: "/pin.png",
+  iconSize: [38, 38], // measured in pixels
+  iconAnchor: [38/2, 38], // anchor in the bottom middle
+});
+
 function MyMap() {
   const position: LatLngExpression = [29.648643, -82.349709];
   return (
@@ -53,7 +59,7 @@ function MyMap() {
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={position}>
+      <Marker position={position} icon={destIcon}>
         <Popup>
           You can put any <code>html</code> in here <br/>
           <button>Test Btn</button>
