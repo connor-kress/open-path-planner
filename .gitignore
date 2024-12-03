@@ -8,3 +8,6 @@
 *.njsproj
 *.sln
 *.sw?
+
+# Python library cache
+cache
