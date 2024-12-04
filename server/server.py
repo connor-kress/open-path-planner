@@ -1,8 +1,9 @@
+import math
+import time
 from typing import Optional
 from flask import Flask, request
 from flask_cors import CORS
 
-import math
 import osmnx as ox
 from osmnx.distance import great_circle, nearest_nodes
 import networkx as nx
@@ -57,7 +58,11 @@ def path():
     finish_offset = great_circle(*finish_query, *finish_coords)
 
     # Replace with custom algorithms
+    start_time = time.perf_counter()
     node_path = nx.shortest_path(G, source=start, target=finish, weight="length")
+    end_time = time.perf_counter()
+    calc_time = end_time - start_time
+
     path_length = nx.path_weight(G, node_path, weight="length")
 
     node_path_json = [
@@ -88,7 +93,8 @@ def path():
         "nodePath": node_path_json,
         "geoPath": geometric_path,
         "length": path_length,  # meters
-        "straightLength": great_circle(*start_coords, *finish_coords),
+        "straightLength": great_circle(*start_coords, *finish_coords),  # meters
+        "calcTime": calc_time, # seconds
         "offsets": {
             "start": start_offset,  # meters
             "finish": finish_offset,  # meters
