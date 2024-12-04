@@ -1,0 +1,9 @@
+/* Default cursor as a pointer */
+.leaflet-container {
+  cursor: default;
+}
+
+/* Cursor as grabbing hand during drag */
+.leaflet-container.leaflet-dragging {
+  cursor: grabbing;
+}
