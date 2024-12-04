@@ -4,6 +4,7 @@ import networkx as nx
 
 # Define your coordinate and radius (in meters)
 start = (29.648643, -82.349709)
+finish = (29.652142, -82.339330)
 radius = 1000  # Radius in meters
 
 # Fetch road network data around the coordinate
