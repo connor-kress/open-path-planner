@@ -95,7 +95,7 @@ function App() {
         Find path
       </button>
       {pathDataLoading && <span> Loading...</span>}
-      {pathData !== null &&
+      {pathData !== null && !pathDataLoading &&
         <span>
           {" "}Calculated path in {pathData.calcTime.toPrecision(4)} seconds
           ({(pathData.length / 1000).toPrecision(4)} km)
