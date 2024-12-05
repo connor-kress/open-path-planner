@@ -138,6 +138,12 @@ function MyMap({ start, finish, handleMapClick, pathData }: {
     return null;
   }
 
+  async function copyCoordsToClipboard(coords: LatLngExpression) {
+    const fixedCoords = coords as {lat: number, lng: number};
+    const coordsMsg = `${fixedCoords.lat}, ${fixedCoords.lng}`;
+    await navigator.clipboard.writeText(coordsMsg);
+  }
+
   return (
     <MapContainer style={{height: "100vh"}} center={centerPos}
                   zoom={16} scrollWheelZoom={true}>
@@ -147,12 +153,28 @@ function MyMap({ start, finish, handleMapClick, pathData }: {
       />
       {start !== null &&
         <Marker position={start} icon={redPin} key={0}>
-          <Popup>Start</Popup>
+          <Popup>
+            Start<br/>
+            lat: {(start as {lat: number}).lat.toFixed(5)}{" "}
+            lon: {(start as {lng: number}).lng.toFixed(5)}
+            <br/>
+            <button onClick={async () => await copyCoordsToClipboard(start)}>
+              Copy to Clipboard
+            </button>
+          </Popup>
         </Marker>
       }
       {finish !== null &&
         <Marker position={finish} icon={purplePin} key={1}>
-          <Popup>Finish</Popup>
+          <Popup>
+            Finish<br/>
+            lat: {(finish as {lat: number}).lat.toFixed(5)}{" "}
+            lon: {(finish as {lng: number}).lng.toFixed(5)}
+            <br/>
+            <button onClick={async () => await copyCoordsToClipboard(finish)}>
+              Copy to Clipboard
+            </button>
+          </Popup>
         </Marker>
       }
       {pathData !== null &&
