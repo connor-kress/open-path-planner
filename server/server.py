@@ -37,7 +37,7 @@ def get_endpoints_and_graph(
     finish_query: tuple[float, float]
 ) -> tuple[int, int, nx.MultiDiGraph]:
     radius = great_circle(*start_query, *finish_query) + 2000  # 2km extra
-    G = ox.graph_from_point(start_query, dist=radius, network_type='bike')
+    G = ox.graph_from_point(start_query, dist=radius, network_type='walk')
     start = nearest_nodes(G, X=start_query[1], Y=start_query[0])
     finish = nearest_nodes(G, X=finish_query[1], Y=finish_query[0])
     return start, finish, G
@@ -81,7 +81,8 @@ def path():
         if geometry is None:
             u_coords = (G.nodes[u]['y'], G.nodes[u]['x'])
             v_coords = (G.nodes[v]['y'], G.nodes[v]['x'])
-            if not are_coords_close(u_coords, geometric_path[-1]):
+            if not geometric_path \
+                or not are_coords_close(u_coords, geometric_path[-1]):
                 geometric_path.append(u_coords)
             geometric_path.append(v_coords)
         else:
