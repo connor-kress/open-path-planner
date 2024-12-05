@@ -8,6 +8,8 @@ import osmnx as ox
 from osmnx.distance import great_circle, nearest_nodes
 import networkx as nx
 
+import algorithms as algos
+
 app = Flask(__name__)
 CORS(app)
 
@@ -59,7 +61,9 @@ def path():
 
     # Replace with custom algorithms
     start_time = time.perf_counter()
-    node_path = nx.shortest_path(G, source=start, target=finish, weight="length")
+    # node_path = nx.shortest_path(G, source=start, target=finish, weight="length")
+    node_path = algos.solve_djikstra(G, start, finish)
+    # node_path = algos.solve_a_star(G, start, finish)
     end_time = time.perf_counter()
     calc_time = end_time - start_time
 
