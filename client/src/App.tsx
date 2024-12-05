@@ -12,12 +12,24 @@ import {
 import 'leaflet/dist/leaflet.css'
 import './App.css'
 
+type PathData = {
+  nodePath: { id: number, coords: [number, number] }[],
+  geoPath: [number, number][],
+  length: number, // meters
+  straightLength: number, // meters
+  calcTime: number, // seconds
+  offsets: {
+    start: number, // meters
+    finish: number, // meters
+  },
+}
+
 async function fetchPathData(start: LatLng, finish: LatLng) {
-  console.log(start);
+  console.log("Fetching path data");
   const url = `http://localhost:5000/api/path?lat1=${start.lat}&lon1=${start.lng}&lat2=${finish.lat}&lon2=${finish.lng}`;
   const res = await fetch(url);
   const data = await res.json();
-  return data;
+  return data as PathData;
 }
 
 function App() {
@@ -27,7 +39,7 @@ function App() {
     if (!isStart) setIsStart(true);
   }
 
-  function toggleEndSwitch() {
+  function toggleFinishSwitch() {
     if (isStart) setIsStart(false);
   }
 
@@ -42,7 +54,7 @@ function App() {
     }
   }
 
-  const [pathGeoData, setPathGeoData] = useState<[number, number][]| null>(null);
+  const [pathData, setPathData] = useState<PathData | null>(null);
   const [pathDataLoading, setPathDataLoading] = useState(false);
 
   async function handleFindPath() {
@@ -50,9 +62,10 @@ function App() {
       alert("Please select both endpoints by selecting the start and then finish checkboxes!");
       return;
     }
+    if (pathDataLoading) return;
     setPathDataLoading(true);
     const data = await fetchPathData(start as LatLng, finish as LatLng);
-    setPathGeoData(data.geoPath);
+    setPathData(data);
     setPathDataLoading(false);
     console.log(data);
   }
@@ -74,7 +87,7 @@ function App() {
         <input
           type="checkbox"
           checked={!isStart}
-          onChange={toggleEndSwitch}
+          onChange={toggleFinishSwitch}
         />
       </label>
       <br/>
@@ -82,11 +95,17 @@ function App() {
         Find path
       </button>
       {pathDataLoading && <span> Loading...</span>}
+      {pathData !== null &&
+        <span>
+          {" "}Calculated path in {pathData.calcTime.toPrecision(4)} seconds
+          ({(pathData.length / 1000).toPrecision(4)} km)
+        </span>
+      }
       <MyMap
         start={start}
         finish={finish}
         handleMapClick={handleMapClick}
-        pathGeoData={pathGeoData}
+        pathData={pathData}
       />
     </>
   )
@@ -104,11 +123,11 @@ const purplePin = new Icon({
   iconAnchor: [38/2, 38],
 });
 
-function MyMap({ start, finish, handleMapClick, pathGeoData }: {
+function MyMap({ start, finish, handleMapClick, pathData }: {
   start: LatLngExpression | null,
   finish: LatLngExpression | null,
   handleMapClick: (e: {latlng: LatLngExpression}) => void,
-  pathGeoData: [number, number][] | null,
+  pathData: PathData | null,
 }) {
   const centerPos: LatLngExpression = [29.648643, -82.349709];
 
@@ -136,8 +155,8 @@ function MyMap({ start, finish, handleMapClick, pathGeoData }: {
           <Popup>Finish</Popup>
         </Marker>
       }
-      {pathGeoData !== null &&
-        <Polyline positions={pathGeoData} color="blue"
+      {pathData !== null &&
+        <Polyline positions={pathData.geoPath} color="blue"
                   weight={4} opacity={0.7} />
       }
       <MapClickHandler />
